@@ -31,8 +31,10 @@ FTP_Dir="backup"
 
 TodayWWWBackup=www-*-$(date +"%Y%m%d").tar.gz
 TodayDBBackup=db-*-$(date +"%Y%m%d").sql
+TodayConfVhostBackup=conf-vhost_$(date +"%Y%m%d").tar.gz
 OldWWWBackup=www-*-$(date -d -3day +"%Y%m%d").tar.gz
 OldDBBackup=db-*-$(date -d -3day +"%Y%m%d").sql
+OldConfVhostBackup=conf-vhost_$(date -d -3day +"%Y%m%d").tar.gz
 
 Backup_Dir()
 {
@@ -45,6 +47,8 @@ Backup_Sql()
 {
     ${MySQL_Dump} -u$MYSQL_UserName -p$MYSQL_PassWord $1 > ${Backup_Home}db-$1-$(date +"%Y%m%d").sql
 }
+
+tar zcf ${Backup_Home}conf-vhost_$(date +"%Y%m%d").tar.gz /usr/local/nginx/conf/vhost
 
 if [ ! -f ${MySQL_Dump} ]; then  
     echo "mysqldump command not found.please check your setting."
@@ -72,6 +76,7 @@ done
 echo "Delete old backup files..."
 rm -f ${Backup_Home}${OldWWWBackup}
 rm -f ${Backup_Home}${OldDBBackup}
+rm -f ${Backup_Home}${OldConfVhostBackup}
 
 if [ ${Enable_FTP} = 0 ]; then
     echo "Uploading backup files to ftp..."
@@ -80,8 +85,10 @@ if [ ${Enable_FTP} = 0 ]; then
 cd ${FTP_Dir}
 mrm ${OldWWWBackup}
 mrm ${OldDBBackup}
+mrm ${OldConfVhostBackup}
 mput ${TodayWWWBackup}
 mput ${TodayDBBackup}
+mput ${TodayConfVhostBackup}
 bye
 EOF
 
