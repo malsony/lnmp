@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-DB_Info=('MySQL 5.1.73' 'MySQL 5.5.62' 'MySQL 5.6.51' 'MySQL 5.7.34' 'MySQL 8.0.25' 'MariaDB 5.5.68' 'MariaDB 10.1.48' 'MariaDB 10.2.38' 'MariaDB 10.3.29' 'MariaDB 10.4.19')
-PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.40' 'PHP 7.0.33' 'PHP 7.1.33' 'PHP 7.2.34' 'PHP 7.3.29' 'PHP 7.4.21' 'PHP 8.0.8')
-Apache_Info=('Apache 2.2.34' 'Apache 2.4.48')
+DB_Info=('MySQL 5.1.73' 'MySQL 5.5.62' 'MySQL 5.6.51' 'MySQL 5.7.38' 'MySQL 8.0.30' 'MariaDB 5.5.68' 'MariaDB 10.3.35' 'MariaDB 10.4.25' 'MariaDB 10.5.16' 'MariaDB 10.6.8')
+PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.40' 'PHP 7.0.33' 'PHP 7.1.33' 'PHP 7.2.34' 'PHP 7.3.33' 'PHP 7.4.33' 'PHP 8.0.27' 'PHP 8.1.14' 'PHP 8.2.1')
+Apache_Info=('Apache 2.2.34' 'Apache 2.4.53')
 
 Database_Selection()
 {
@@ -35,25 +35,205 @@ Database_Selection()
         echo "You will Install ${DB_Info[2]}"
         ;;
     4)
-        echo "You will install ${DB_Info[3]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     5)
-        echo "You will install ${DB_Info[4]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" || "${DB_ARCH}" = "aarch64" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[4]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[4]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[4]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[4]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     6)
         echo "You will install ${DB_Info[5]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     7)
         echo "You will install ${DB_Info[6]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     8)
         echo "You will install ${DB_Info[7]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     9)
         echo "You will install ${DB_Info[8]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     10)
         echo "You will install ${DB_Info[9]}"
+        if [[ "${DB_ARCH}" = "x86_64" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[3]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[3]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[3]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[3]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     0)
         echo "Do not install MySQL/MariaDB!"
@@ -63,7 +243,7 @@ Database_Selection()
         DBSelect="2"
     esac
 
-    if [[ "${DBSelect}" =~ ^[59]|10$ ]] && [ `free -m | grep Mem | awk '{print  $2}'` -le 1024 ]; then
+    if [ "${Bin}" != "y" ] && [[ "${DBSelect}" =~ ^5|[7-9]|10$ ]] && [ $(free -m | grep Mem | awk '{print  $2}') -le 1024 ]; then
         echo "Memory less than 1GB, can't install MySQL 8.0 or MairaDB 10.3+!"
         exit 1
     fi
@@ -136,7 +316,9 @@ PHP_Selection()
         echo "9: Install ${PHP_Info[8]}"
         echo "10: Install ${PHP_Info[9]}"
         echo "11: Install ${PHP_Info[10]}"
-        read -p "Enter your choice (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11): " PHPSelect
+        echo "12: Install ${PHP_Info[11]}"
+        echo "13: Install ${PHP_Info[12]}"
+        read -p "Enter your choice (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13): " PHPSelect
     fi
 
     case "${PHPSelect}" in
@@ -176,6 +358,12 @@ PHP_Selection()
         ;;
     11)
         echo "You will install ${PHP_Info[10]}"
+        ;;
+    12)
+        echo "You will install ${PHP_Info[11]}"
+        ;;
+    13)
+        echo "You will install ${PHP_Info[12]}"
         ;;
     *)
         echo "No input,You will install ${PHP_Info[4]}"
@@ -356,8 +544,8 @@ Get_Dist_Version()
 
 Get_Dist_Name()
 {
-    if grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
-        DISTRO='CentOS'
+    if grep -Eqi "Alibaba" /etc/issue || grep -Eq "Alibaba Cloud Linux" /etc/*-release; then
+        DISTRO='Alibaba'
         PM='yum'
     elif grep -Eqi "Aliyun" /etc/issue || grep -Eq "Aliyun Linux" /etc/*-release; then
         DISTRO='Aliyun'
@@ -374,9 +562,27 @@ Get_Dist_Name()
     elif grep -Eqi "Red Hat Enterprise Linux" /etc/issue || grep -Eq "Red Hat Enterprise Linux" /etc/*-release; then
         DISTRO='RHEL'
         PM='yum'
-    elif grep -Eqi "Debian" /etc/issue || grep -Eq "Debian" /etc/*-release; then
-        DISTRO='Debian'
-        PM='apt'
+    elif grep -Eqi "rockylinux" /etc/issue || grep -Eq "Rocky Linux" /etc/*-release; then
+        DISTRO='Rocky'
+        PM='yum'
+    elif grep -Eqi "almalinux" /etc/issue || grep -Eq "AlmaLinux" /etc/*-release; then
+        DISTRO='Alma'
+        PM='yum'
+    elif grep -Eqi "openEuler" /etc/issue || grep -Eq "openEuler" /etc/*-release; then
+        DISTRO='openEuler'
+        PM='yum'
+    elif grep -Eqi "Anolis OS" /etc/issue || grep -Eq "Anolis OS" /etc/*-release; then
+        DISTRO='Anolis'
+        PM='yum'
+    elif grep -Eqi "Kylin Linux Advanced Server" /etc/issue || grep -Eq "Kylin Linux Advanced Server" /etc/*-release; then
+        DISTRO='Kylin'
+        PM='yum'
+    elif grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
+        DISTRO='CentOS'
+        PM='yum'
+        if grep -Eq "CentOS Stream" /etc/*-release; then
+            isCentosStream='y'
+        fi
     elif grep -Eqi "Ubuntu" /etc/issue || grep -Eq "Ubuntu" /etc/*-release; then
         DISTRO='Ubuntu'
         PM='apt'
@@ -392,6 +598,19 @@ Get_Dist_Name()
     elif grep -Eqi "Kali" /etc/issue || grep -Eq "Kali" /etc/*-release; then
         DISTRO='Kali'
         PM='apt'
+    elif grep -Eqi "Debian" /etc/issue || grep -Eq "Debian" /etc/*-release; then
+        DISTRO='Debian'
+        PM='apt'
+    elif grep -Eqi "UnionTech OS" /etc/issue || grep -Eq "UnionTech OS" /etc/*-release; then
+        DISTRO='UOS'
+        if command -v apt >/dev/null 2>&1; then
+            PM='apt'
+        elif command -v yum >/dev/null 2>&1; then
+            PM='yum'
+        fi
+    elif grep -Eqi "Kylin Linux Desktop" /etc/issue || grep -Eq "Kylin Linux Desktop" /etc/*-release; then
+        DISTRO='Kylin'
+        PM='yum'
     else
         DISTRO='unknow'
     fi
@@ -415,6 +634,7 @@ Get_RHEL_Version()
             echo "Current Version: RHEL Ver 8"
             RHEL_Ver='8'
         fi
+        RHEL_Version="$(cat /etc/redhat-release | sed 's/.*release\ //' | sed 's/\ .*//')"
     fi
 }
 
@@ -422,15 +642,24 @@ Get_OS_Bit()
 {
     if [[ `getconf WORD_BIT` = '32' && `getconf LONG_BIT` = '64' ]] ; then
         Is_64bit='y'
+        ARCH='x86_64'
+        DB_ARCH='x86_64'
     else
         Is_64bit='n'
+        ARCH='i386'
+        DB_ARCH='i686'
     fi
-}
 
-Get_ARM()
-{
     if uname -m | grep -Eqi "arm|aarch64"; then
         Is_ARM='y'
+        if uname -m | grep -Eqi "armv7|armv6"; then
+            ARCH='armhf'
+        elif uname -m | grep -Eqi "aarch64"; then
+            ARCH='aarch64'
+            DB_ARCH='aarch64'
+        else
+            ARCH='arm'
+        fi
     fi
 }
 
@@ -558,11 +787,15 @@ Print_Sys_Info()
     cat /etc/issue
     cat /etc/*-release
     uname -a
-    MemTotal=`free -m | grep Mem | awk '{print  $2}'`
+    MemTotal=$(free -m | grep Mem | awk '{print  $2}')
     echo "Memory is: ${MemTotal} MB "
     df -h
-    openssl version
+    Check_Openssl
     Check_WSL
+    if [ "${CheckMirror}" != "n" ]; then
+        Get_Country
+        echo "Server Location: ${country}"
+    fi
 }
 
 StartUp()
@@ -600,9 +833,13 @@ Remove_StartUp()
 
 Get_Country()
 {
-    country=`curl -sSk --connect-timeout 30 -m 60 https://ip.vpszt.com/country`
-    if [ $? -ne 0 ]; then
-        country=`curl -sSk --connect-timeout 30 -m 60 https://ip.vpser.net/country`
+    if command -v curl >/dev/null 2>&1; then
+        country=`curl -sSk --connect-timeout 30 -m 60 http://ip.vpszt.com/country`
+        if [ $? -ne 0 ]; then
+            country=`curl -sSk --connect-timeout 30 -m 60 https://ip.vpser.net/country`
+        fi
+    else
+        country=`wget --timeout=5 --no-check-certificate -q -O - http://ip.vpszt.com/country`
     fi
 }
 
@@ -617,8 +854,6 @@ Check_Mirror()
             apt-get install -y curl
         fi
     fi
-    Get_Country
-    echo "Server Location: ${country}"
     if [ "${Download_Mirror}" = "https://soft.vpser.net" ]; then
         echo "Try http://soft.vpser.net ..."
         mirror_code=`curl -o /dev/null -m 20 --connect-timeout 20 -sk -w %{http_code} http://soft.vpser.net`
@@ -676,15 +911,15 @@ Check_CMPT()
             exit 1
         fi
     fi
-    if [[ "${PHPSelect}" == "10" ]]; then
+    if [[ "${PHPSelect}" =~ ^1[0-2]$ ]]; then
         if echo "${Ubuntu_Version}" | grep -Eqi "^1[0-7]\." || echo "${Debian_Version}" | grep -Eqi "^[4-8]" || echo "${Raspbian_Version}" | grep -Eqi "^[4-8]" || echo "${CentOS_Version}" | grep -Eqi "^[4-6]"  || echo "${RHEL_Version}" | grep -Eqi "^[4-6]" || echo "${Fedora_Version}" | grep -Eqi "^2[0-3]"; then
-            Echo_Red "PHP 7.4 please use latest linux distributions!"
+            Echo_Red "PHP 7.4 and PHP 8.* please use latest linux distributions!"
             exit 1
         fi
     fi
-    if [[ "${PHPSelect}" =~ ^[123456]$ ]]; then
-        if echo "${Ubuntu_Version}" | grep -Eqi "^19|2[0-7]\." || echo "${Debian_Version}" | grep -Eqi "^10" || echo "${Raspbian_Version}" | grep -Eqi "^10" || echo "${Deepin_Version}" | grep -Eqi "^2[0-9]" || echo "${Fedora_Version}" | grep -Eqi "^29|3[0-9]"; then
-            Echo_Red "Install lower than PHP 7.1 is not supported on very new linux versions such as Ubuntu 19+, Debian 10, Deepin 20+, Fedora 29+ etc."
+    if [[ "${PHPSelect}" = "1" ]]; then
+        if echo "${Ubuntu_Version}" | grep -Eqi "^19|2[0-7]\." || echo "${Debian_Version}" | grep -Eqi "^1[0-9]" || echo "${Raspbian_Version}" | grep -Eqi "^1[0-9]" || echo "${Deepin_Version}" | grep -Eqi "^2[0-9]" || echo "${UOS_Version}" | grep -Eqi "^2[0-9]" || echo "${Fedora_Version}" | grep -Eqi "^29|3[0-9]"; then
+            Echo_Red "PHP 5.2 is not supported on very new linux versions such as Ubuntu 19+, Debian 10, Deepin 20+, Fedora 29+ etc."
             exit 1
         fi
     fi
@@ -812,5 +1047,23 @@ Check_WSL() {
         isWSL="y"
     else
         isWSL="n"
+    fi
+}
+
+Check_Openssl()
+{
+    if ! command -v openssl >/dev/null 2>&1; then
+        Echo_Blue "[+] Installing openssl..."
+        if [ "${PM}" = "yum" ]; then
+            yum install -y openssl
+        elif [ "${PM}" = "apt" ]; then
+            apt-get update -y
+            [[ $? -ne 0 ]] && apt-get update --allow-releaseinfo-change -y
+            apt-get install -y openssl
+        fi
+    fi
+    openssl version
+    if openssl version | grep -Eqi "OpenSSL 3.*"; then
+        isOpenSSL3='y'
     fi
 }

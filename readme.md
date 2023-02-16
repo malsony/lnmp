@@ -1,12 +1,14 @@
+**当前为lnmp 2.0测试版**
+
 # LNMP一键安装包 - Readme
 
 ## LNMP一键安装包是什么?
 
-LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RHEL/Fedora/Aliyun/Amazon、Debian/Ubuntu/Raspbian/Deepin/Mint Linux VPS或独立主机安装LNMP(Nginx/MySQL/PHP)、LNMPA(Nginx/MySQL/PHP/Apache)、LAMP(Apache/MySQL/PHP)生产环境的Shell程序。
+LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RHEL/Fedora/Debian/Ubuntu/Raspbian/Deepin/Alibaba/Amazon/Mint/Oracle/Rocky/Alma/Kali/UOS/银河麒麟/openEuler/Anolis OS Linux VPS或独立主机安装LNMP(Nginx/MySQL/PHP)、LNMPA(Nginx/MySQL/PHP/Apache)、LAMP(Apache/MySQL/PHP)生产环境的Shell程序。
 
 ## LNMP一键安装包有哪些功能？
 
-支持自定义Nginx、PHP编译参数及网站和数据库目录、支持生成LetseEcrypt证书、LNMP模式支持多PHP版本、支持单独安装Nginx/MySQL/MariaDB/Pureftpd服务器，同时提供一些实用的辅助工具如：虚拟主机管理、FTP用户管理、Nginx、MySQL/MariaDB、PHP的升级、常用缓存组件Redis/Xcache等的安装、重置MySQL root密码、502自动重启、日志切割、SSH防护DenyHosts/Fail2Ban、备份等许多实用脚本。
+支持自定义Nginx、PHP编译参数及网站和数据库目录、支持生成Let's Ecrypt/ZeroSSL/BuyPass免费SSL证书、支持无人值守、LNMP模式支持多PHP版本、支持单独安装Nginx/MySQL/MariaDB/Pureftpd服务器，同时提供一些实用的辅助工具如：虚拟主机管理、FTP用户管理、Nginx、MySQL/MariaDB、PHP的升级、常见PHP模块exif、fileinfo、ldap、bz2、sodium、imap和swoole的一键安装、常用缓存组件Redis/Xcache等的安装、重置MySQL root密码、502自动重启、日志切割、SSH防护DenyHosts/Fail2Ban、备份等许多实用脚本。
 
 * LNMP官网：<https://lnmp.org>
 * 作者: licess <admin@lnmp.org>
@@ -17,13 +19,13 @@ LNMP一键安装包是一个用Linux Shell编写的可以为CentOS/RHEL/Fedora/A
 
 安装前确认已经安装wget命令，如提示wget: command not found ，使用`yum install wget` 或 `apt-get install wget` 命令安装。
 为防止掉线等情况，建议使用screen，可以先执行：screen -S lnmp 命令后，再执行LNMP安装命令：
-`wget http://soft.vpser.net/lnmp/lnmp1.8.tar.gz -cO lnmp1.8.tar.gz && tar zxf lnmp1.8.tar.gz && cd lnmp1.8 && ./install.sh {lnmp|lnmpa|lamp}`
+`wget http://soft.vpser.net/lnmp/lnmp2.0beta.tar.gz -cO lnmp2.0beta.tar.gz && tar zxf lnmp2.0beta.tar.gz && cd lnmp2.0 && ./install.sh {lnmp|lnmpa|lamp}`
 
 如断线可使用`screen -r lnmp` 恢复。**详细安装教程参考：<https://lnmp.org/install.html>**
 
 ## 常用功能说明
 
-**以下操作需在lnmp安装包目录下执行，如lnmp1.8**
+**以下操作需在lnmp安装包目录下执行，如lnmp2.0**
 
 ### 自定义参数
 lnmp.conf配置文件，可以修改lnmp.conf自定义下载服务器地址、网站/数据库目录及添加nginx模块和php编译参数；不论安装升级都会调用该文件里的设置(如果修改了默认的参数建议备份此文件)；
@@ -44,7 +46,7 @@ lnmp.conf配置文件，可以修改lnmp.conf自定义下载服务器地址、�
 * 参数: phpmyadmin    可升级phpMyadmin。
 
 ### 扩展插件
-执行: `./addons.sh {install|uninstall} {eaccelerator|xcache|memcached|opcache|redis|apcu|imagemagick|ioncube}`
+执行: `./addons.sh {install|uninstall} {eaccelerator|xcache|memcached|opcache|redis|apcu|imagemagick|ioncube|exif|fileinfo|ldap|bz2|sodium|imap|swoole}`
 以下为扩展插件安装使用说明
 #### 缓存加速：
 * 参数: xcache 安装时需选择版本和设置密码，http://yourIP/xcache/ 进行管理，用户名 admin，密码为安装xcache时设置的。
@@ -54,12 +56,20 @@ lnmp.conf配置文件，可以修改lnmp.conf自定义下载服务器地址、�
 * 参数: eaccelerator 安装。
 * 参数: apcu 安装apcu php扩展，支持php7，可访问 http://yourIP/apc.php 进行管理。 
 **请勿安装多个缓存类扩展模块，多个可能导致网站出现问题 ！**
+#### PHP组件/模块：
+* 参数：exif   图片exif信息读取模块。
+* 参数：fileinfo   文件MIME类型编码读取模块，安装要求至少有1GB以上内存，否则可能会安装失败。
+* 参数：ldap    LDAP扩展。
+* 参数：bz2     bz2压缩扩展模块。
+* 参数：imap    imap模块。
+* 参数：swoole  PHP协程框架模块，第三方模块不支持通过lnmp.conf开启安装。
 
 #### 图像处理：
 * imageMagick安装卸载执行：`./addons.sh {install|uninstall} imageMagick` imageMagick路径：/usr/local/imagemagick/bin/。
 
 #### 解密：
 * IonCube安装执行：`./addons.sh {install|uninstall} ionCube`。
+* Sodium加密库扩展模块安装/卸载执行：`./addons.sh {install|uninstall} sodium `，一般微信支付之类的需要使用，PHP 7.2以下版本不支持通过lnmp.conf开启安装。
 
 #### 其他常用脚本：
 * 可选1，多PHP版本安装执行：`./install.sh mphp` 可以安装多个PHP版本 ，只支持LNMP模式，lnmp vhost add时进行选择或使用时需要将nginx虚拟主机配置文件里的include enable-php.conf替换为 include enable-php5.6.conf 即可前面的5.6换成你刚才安装的PHP的大版本号5.* 或7.0之类的。
@@ -88,6 +98,7 @@ ApacheSelect | Apache版本序号，仅LNMPA和LAMP模式需添加该参数
 ServerAdmin | 管理员邮箱，仅LNMPA和LAMP模式需添加该参数
 RHELRepo | (非必选)设为 local 时，RHEL使用本地源，不设置源为163 centos源
 CheckMirror | (非必选)安装时不检查下载镜像，方便无网络安装
+Bin | (非必选)MySQL 8.0使用二进制方式安装，y 或 n，默认使用二进制方式安装
 
 * 各程序版本对应序号
 
@@ -99,15 +110,17 @@ MySQL 5.6 | 3 | PHP 5.4 | 3 | TCMalloc | 3 | |
 MySQL 5.7 | 4 | PHP 5.5 | 4 | | | |
 MySQL 8.0 | 5 | PHP 5.6 | 5 | | | |
 MariaDB 5.5 | 6 | PHP 7.0 | 6 | | | |
-MariaDB 10.1 | 7 | PHP 7.1 | 7 | | | |
-MariaDB 10.2 | 8 | PHP 7.2 | 8 | | | |
-MariaDB 10.3 | 9 | PHP 7.3 | 9 | | | |
-MariaDB 10.4 | 10 | PHP 7.4 | 10 | | | |
+MariaDB 10.3 | 7 | PHP 7.1 | 7 | | | |
+MariaDB 10.4 | 8 | PHP 7.2 | 8 | | | |
+MariaDB 10.5 | 9 | PHP 7.3 | 9 | | | |
+MariaDB 10.6 | 10 | PHP 7.4 | 10 | | | |
 不安装数据库 | 0 | PHP 8.0 | 11 | | | |
+| | | PHP 8.1 | 12 | | | |
+| | | PHP 8.2 | 13 | | | |
 
 * 以LNMP模式，默认选项安装MySQL 5.5、MySQL root密码设置为lnmp.org、启用InnoDB、PHP 5.6、不安装内存分配器为例，先执行([建议先运行screen](https://www.vpser.net/manage/run-screen-lnmp.html))，再下载解压lnmp安装包：
 
-`wget http://soft.vpser.net/lnmp/lnmp1.8.tar.gz -cO lnmp1.8.tar.gz && tar zxf lnmp1.8.tar.gz && cd lnmp1.8`
+`wget http://soft.vpser.net/lnmp/lnmp2.0beta.tar.gz -cO lnmp2.0beta.tar.gz && tar zxf lnmp2.0beta.tar.gz && cd lnmp2.0`
 
 然后设置无人值守参数并安装：
 
@@ -134,7 +147,7 @@ MariaDB 10.4 | 10 | PHP 7.4 | 10 | | | |
 * 数据库管理：`lnmp database {add|list|edit|del}`
 * FTP用户管理：`lnmp ftp {add|list|edit|del|show}`
 * SSL添加：`lnmp ssl add`
-* 通配符/泛域名SSL添加：`lnmp dnsssl {cx|ali|cf|dp|he|gd|aws}` 需依赖域名dns api
+* 通配符/泛域名SSL添加：`lnmp dnsssl {ali|cf|dp|he|gd|aws|namecheap|namesilo}` 需依赖域名dns api
 
 ## 相关图形界面
 * PHPMyAdmin：http://yourIP/phpmyadmin/
@@ -178,7 +191,14 @@ MariaDB 10.4 | 10 | PHP 7.4 | 10 | | | |
 |Enable_Nginx_Openssl|Nginx是否使用新版openssl|默认 y，建议不修改，y是启用并开启到http2|
 |Enable_PHP_Fileinfo|是否安装开启php的fileinfo模块|默认n，根据自己情况而定，安装启用的话改成 y|
 |Enable_Nginx_Lua|是否为Nginx安装lua支持|默认n，安装lua可以使用一些基于lua的waf网站防火墙|
+|Enable_Ngx_FancyIndex|是否按fancyIndex模块|默认n，fancyIndex是一个第三方目录索引模块|
 |Enable_Swap|是否添加SWAP|默认y，当内存不足时可提高编译安装成功概率|
+|Enable_PHP_Exif|是否添加PHP exif模块|默认n，更改为y即安装|
+|Enable_PHP_Fileinfo|是否添加PHP fileinfo模块|默认n，更改为y即安装，需1GB以上内存|
+|Enable_PHP_Ldap|是否添加PHP ldap模块|默认n，更改为y即安装|
+|Enable_PHP_Bz2|是否添加PHP bz2模块|默认n，更改为y即安装|
+|Enable_PHP_Sodium|是否添加PHP sodium模块，PHP 7.2以下不支持lnmp.conf开启安装|默认n，更改为y即安装|
+|Enable_PHP_Imap|是否添加PHP imap模块|默认n，更改为y即安装|
 
 ## 技术支持
 

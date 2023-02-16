@@ -15,7 +15,7 @@ else
     Stack=$1
 fi
 
-LNMP_Ver='1.8'
+LNMP_Ver='2.0'
 . lnmp.conf
 . include/main.sh
 . include/init.sh
@@ -62,17 +62,9 @@ Init_Install()
     Print_Sys_Info
     Check_Hosts
     Check_CMPT
+    Modify_Source
     if [ "${CheckMirror}" != "n" ]; then
         Check_Mirror
-    fi
-    if [ "${DISTRO}" = "RHEL" ]; then
-        RHEL_Modify_Source
-    fi
-    if [ "${DISTRO}" = "Ubuntu" ]; then
-        Ubuntu_Modify_Source
-    fi
-    if [ "${DISTRO}" = "CentOS" ]; then
-        CentOS6_Modify_Source
     fi
     Add_Swap
     Set_Timezone
@@ -118,13 +110,13 @@ Init_Install()
     elif [ "${DBSelect}" = "6" ]; then
         Install_MariaDB_5
     elif [ "${DBSelect}" = "7" ]; then
-        Install_MariaDB_101
-    elif [ "${DBSelect}" = "8" ]; then
-        Install_MariaDB_102
-    elif [ "${DBSelect}" = "9" ]; then
         Install_MariaDB_103
-    elif [ "${DBSelect}" = "10" ]; then
+    elif [ "${DBSelect}" = "8" ]; then
         Install_MariaDB_104
+    elif [ "${DBSelect}" = "9" ]; then
+        Install_MariaDB_105
+    elif [ "${DBSelect}" = "10" ]; then
+        Install_MariaDB_106
     fi
     TempMycnf_Clean
     Clean_DB_Src_Dir
@@ -155,6 +147,10 @@ Install_PHP()
         Install_PHP_74
     elif [ "${PHPSelect}" = "11" ]; then
         Install_PHP_80
+    elif [ "${PHPSelect}" = "12" ]; then
+        Install_PHP_81
+    elif [ "${PHPSelect}" = "13" ]; then
+        Install_PHP_82
     fi
     Clean_PHP_Src_Dir
 }

@@ -86,11 +86,11 @@ Upgrade_MySQL2MariaDB()
         echo "mariadb-${mariadb_version}.tar.gz [found]"
     else
         echo "Notice: mariadb-${mariadb_version}.tar.gz not found!!!download now......"
-        wget -c --progress=bar:force https://downloads.mariadb.org/interstitial/mariadb-${mariadb_version}/source/mariadb-${mariadb_version}.tar.gz
+        wget -c --progress=bar:force https://archive.mariadb.org/mariadb-${mariadb_version}/source/mariadb-${mariadb_version}.tar.gz
         if [ $? -eq 0 ]; then
             echo "Download mariadb-${mariadb_version}.tar.gz successfully!"
         else
-            wget -c --progress=bar:force https://downloads.mariadb.org/interstitial/mariadb-${mariadb_version}/kvm-tarbake-jaunty-x86/mariadb-${mariadb_version}.tar.gz
+            wget -c --progress=bar:force https://mirrors.aliyun.com/mariadb/mariadb-${mariadb_version}/source/mariadb-${mariadb_version}.tar.gz
             if [ $? -eq 0 ]; then
                 echo "Download mariadb-${mariadb_version}.tar.gz successfully!"
             else
@@ -108,7 +108,9 @@ Upgrade_MySQL2MariaDB()
     echo "Starting upgrade MySQL to MariaDB..."
     MariaDB_WITHSSL
     Tar_Cd mariadb-${mariadb_version}.tar.gz mariadb-${mariadb_version}
-    if echo "${mariadb_version}" | grep -Eqi '^10.4.';then
+    if echo "${mariadb_version}" | grep -Eqi '^10.[56].';then
+        cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mariadb -DMYSQL_UNIX_ADDR=/tmp/mysql.sock -DEXTRA_CHARSETS=all -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_READLINE=1 -DWITH_EMBEDDED_SERVER=1 -DENABLED_LOCAL_INFILE=1 -DWITHOUT_TOKUDB=1
+    elif echo "${mariadb_version}" | grep -Eqi '^10.4.';then
         patch -p1 < ${cur_dir}/src/patch/mariadb_10.4_install_db.patch
         cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mariadb -DMYSQL_UNIX_ADDR=/tmp/mysql.sock -DEXTRA_CHARSETS=all -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_READLINE=1 -DWITH_EMBEDDED_SERVER=1 -DENABLED_LOCAL_INFILE=1 -DWITHOUT_TOKUDB=1
     elif echo "${mariadb_version}" | grep -Eqi '^10.[123].';then
@@ -200,9 +202,9 @@ EOF
     else
         mkdir -p ${MariaDB_Data_Dir}
     fi
-    chown -R mariadb:mariadb ${MariaDB_Data_Dir}
+    chown -R mariadb:mariadb /usr/local/mariadb
     /usr/local/mariadb/scripts/mysql_install_db --defaults-file=/etc/my.cnf --basedir=/usr/local/mariadb --datadir=${MariaDB_Data_Dir} --user=mariadb
-    chgrp -R mariadb /usr/local/mariadb/.
+    chown -R mariadb:mariadb ${MariaDB_Data_Dir}
     \cp support-files/mysql.server /etc/init.d/mariadb
     \cp ${cur_dir}/init.d/mariadb.service /etc/systemd/system/mariadb.service
     chmod 755 /etc/init.d/mariadb
@@ -231,7 +233,7 @@ EOF
         Echo_Green "======== upgrade MySQL to MariaDB completed ======"
     else
         Echo_Red "======== upgrade MySQL to MariaDB failed ======"
-        Echo_Red "upgrade MariaDB log: /root/upgrade_mysql2mariadb.log"
-        echo "You upload upgrade_mysql2mariadb.log to LNMP Forum for help."
+        Echo_Red "upgrade MariaDB log: /root/upgrade_mysql2mariadb${Upgrade_Date}.log"
+        echo "You upload upgrade_mysql2mariadb${Upgrade_Date}.log to LNMP Forum for help."
     fi
 }
