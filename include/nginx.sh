@@ -35,13 +35,11 @@ Install_Nginx_Lua()
         Echo_Blue "[+] Installing ${Luajit_Ver}... "
         tar zxf ${LuaNginxModule}.tar.gz
         tar zxf ${NgxDevelKit}.tar.gz
-        if [[ ! -s /usr/local/luajit/bin/luajit || ! -s /usr/local/luajit/include/luajit-2.1/luajit.h || ! -s /usr/local/luajit/lib/libluajit-5.1.so ]]; then
-            Tar_Cd ${Luajit_Ver}.tar.gz ${Luajit_Ver}
-            make
-            make install PREFIX=/usr/local/luajit
-            cd ${cur_dir}/src
-            rm -rf ${cur_dir}/src/${Luajit_Ver}
-        fi
+        Tar_Cd ${Luajit_Ver}.tar.gz ${Luajit_Ver}
+        make
+        make install PREFIX=/usr/local/luajit
+        cd ${cur_dir}/src
+        rm -rf ${cur_dir}/src/${Luajit_Ver}
 
         cat > /etc/ld.so.conf.d/luajit.conf<<EOF
 /usr/local/luajit/lib
@@ -75,7 +73,7 @@ EOF
                 Nginx_Module_Lua="--with-ld-opt=-Wl,-rpath,/usr/local/luajit/lib --add-module=${cur_dir}/src/${LuaNginxModule} --add-module=${cur_dir}/src/${NgxDevelKit} --with-pcre=${cur_dir}/src/${Pcre_Ver} --with-pcre-jit"
                 cd ${cur_dir}/src
                 Download_Files ${Download_Mirror}/web/pcre/${Pcre_Ver}.tar.bz2 ${Pcre_Ver}.tar.bz2
-                Tarj_Cd ${Pcre_Ver}.tar.bz2
+                Tar_Cd ${Pcre_Ver}.tar.bz2
             else
                 Nginx_Module_Lua="--with-ld-opt=-Wl,-rpath,/usr/local/luajit/lib --add-module=${cur_dir}/src/${LuaNginxModule} --add-module=${cur_dir}/src/${NgxDevelKit}"
             fi
@@ -90,7 +88,7 @@ Install_Ngx_FancyIndex()
         cd ${cur_dir}/src
         Download_Files ${Download_Mirror}/web/nginx/${NgxFancyIndex_Ver}.tar.xz ${NgxFancyIndex_Ver}.tar.xz
 
-        TarJ_Cd ${NgxFancyIndex_Ver}.tar.xz
+        Tar_Cd ${NgxFancyIndex_Ver}.tar.xz
         Ngx_FancyIndex="--add-module=${cur_dir}/src/${NgxFancyIndex_Ver}"
     fi
 }

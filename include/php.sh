@@ -56,7 +56,7 @@ PHP_with_openssl()
 PHP_with_fileinfo()
 {
     if [ "${Enable_PHP_Fileinfo}" = "n" ]; then
-        if [[ $(free -m | grep Mem | awk '{print  $2}') -lt 1024 ]]; then
+        if [[ $(awk '/MemTotal/ {printf( "%d\n", $2 / 1024 )}' /proc/meminfo) -lt 1024 ]]; then
             with_fileinfo='--disable-fileinfo'
         else
             with_fileinfo=''
@@ -162,7 +162,7 @@ PHP_with_Imap()
 
 PHP_with_Intl()
 {
-    if echo "${Ubuntu_Version}" | grep -Eqi "^19|2[0-7]\." || echo "${Debian_Version}" | grep -Eqi "^1[0-9]" || echo "${Raspbian_Version}" | grep -Eqi "^1[0-9]" || echo "${Deepin_Version}" | grep -Eqi "^2[0-9]" || echo "${UOS_Version}" | grep -Eqi "^2[0-9]"; then
+    if echo "${Ubuntu_Version}" | grep -Eqi "^19|2[0-7]\." || echo "${Debian_Version}" | grep -Eqi "^1[0-9]" || echo "${Raspbian_Version}" | grep -Eqi "^1[0-9]" || echo "${Deepin_Version}" | grep -Eqi "^2[0-9]" || echo "${UOS_Version}" | grep -Eqi "^2[0-9]" || echo "${Amazon_Version}" | grep -Eqi "^202[3-9]" || echo "${Kali_Version}" | grep -Eqi "^202[2-9]" || echo "${Fedora_Version}" | grep -Eqi "^3[7-9]|4[0-9]" || echo "${openEuler_Version}" | grep -Eqi "^2[2-9]" || echo "${Mint_Version}" | grep -Eqi "^2[0-9]" || echo "${Kylin_Version}" | grep -Eq "^v1[0-9]"; then
         if echo "${PHPSelect}" | grep -Eqi '^[3-6]' || echo "${php_version}" | grep -Eqi '^5.[4-6].*|7.0.*' || echo "${Php_Ver}" | grep -Eqi "php-5.[4-6].*|php-7.0.*"; then
             Install_Icu60
             with_icu_dir='--with-icu-dir=/usr/local/icu'
@@ -210,22 +210,34 @@ Install_Composer()
 {
     if [ "${CheckMirror}" != "n" ]; then
         echo "Downloading Composer..."
-        wget --prefer-family=IPv4 --no-check-certificate -T 120 -t3 https://mirrors.aliyun.com/composer/composer.phar -O /usr/local/bin/composer
-        if [ $? -eq 0 ]; then
-            echo "Composer install successfully."
-            chmod +x /usr/local/bin/composer
-        else
-            echo "Composer install failed, try to from composer official website..."
-            curl -sS --connect-timeout 30 -m 60 https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+        if echo "${PHPSelect}" | grep -Eqi '^[1-8]' || echo "${php_version}" | grep -Eqi '^5.[2-6].*|7.[0-2].*' || echo "${Php_Ver}" | grep -Eqi "php-5.[2-6].*|php-7.[0-2].*"; then
+            wget --progress=dot:giga --prefer-family=IPv4 --no-check-certificate -T 120 -t3 ${Download_Mirror}/web/php/composer/composer-2.2.phar -O /usr/local/bin/composer
             if [ $? -eq 0 ]; then
                 echo "Composer install successfully."
+                chmod +x /usr/local/bin/composer
+            else
+                echo "Composer install failed, try to from composer official website..."
+                curl -sS --connect-timeout 30 -m 60 https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2.2
+                if [ $? -eq 0 ]; then
+                    echo "Composer install successfully."
+                fi
+            fi
+        else
+            wget --progress=dot:giga --prefer-family=IPv4 --no-check-certificate -T 120 -t3 https://mirrors.aliyun.com/composer/composer.phar -O /usr/local/bin/composer
+            if [ $? -eq 0 ]; then
+                echo "Composer install successfully."
+                chmod +x /usr/local/bin/composer
+            else
+                echo "Composer install failed, try to from composer official website..."
+                curl -sS --connect-timeout 30 -m 60 https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                if [ $? -eq 0 ]; then
+                    echo "Composer install successfully."
+                fi
             fi
         fi
         if [ "${country}" = "CN" ]; then
             composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
         fi
-    else
-        echo ""
     fi
 }
 
@@ -323,7 +335,7 @@ Install_PHP_53()
 {
     Echo_Blue "[+] Installing ${Php_Ver}..."
     Check_Curl
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     patch -p1 < ${cur_dir}/src/patch/php-5.3-multipart-form-data.patch
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir=/usr/local/freetype --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-magic-quotes --enable-safe-mode --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization ${with_curl} --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --with-gettext ${with_fileinfo} ${PHP_Buildin_Option} ${PHP_Modules_Options}
@@ -415,7 +427,7 @@ fi
 Install_PHP_54()
 {
     Echo_Blue "[+] Installing ${Php_Ver}..."
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir=/usr/local/freetype --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization ${with_curl} --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --with-gettext ${with_fileinfo} --enable-intl --with-xsl ${PHP_Buildin_Option} ${PHP_Modules_Options}
     else
@@ -505,7 +517,10 @@ fi
 Install_PHP_55()
 {
     Echo_Blue "[+] Installing ${Php_Ver}..."
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    if [ "${ARCH}" = "aarch64" ]; then
+        patch -p1 < ${cur_dir}/src/patch/php-5.5-5.6-asm-aarch64.patch
+    fi
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype-dir=/usr/local/freetype --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization ${with_curl} --enable-mbregex --enable-mbstring --with-mcrypt --enable-ftp --with-gd --enable-gd-native-ttf ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --with-gettext ${with_fileinfo} --enable-opcache --enable-intl --with-xsl ${PHP_Buildin_Option} ${PHP_Modules_Options}
     else
@@ -595,7 +610,10 @@ fi
 Install_PHP_56()
 {
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    if [ "${ARCH}" = "aarch64" ]; then
+        patch -p1 < ${cur_dir}/src/patch/php-5.5-5.6-asm-aarch64.patch
+    fi
     if command -v pkg-config >/dev/null 2>&1 && pkg-config --modversion icu-i18n | grep -Eqi '^6[1-9]|[7-9][0-9]'; then
         patch -p1 < ${cur_dir}/src/patch/php-5.6-intl.patch
     fi
@@ -687,7 +705,7 @@ fi
 Install_PHP_7()
 {
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     if command -v pkg-config >/dev/null 2>&1 && pkg-config --modversion icu-i18n | grep -Eqi '^6[1-9]|[7-9][0-9]'; then
         patch -p1 < ${cur_dir}/src/patch/php-7.0-intl.patch
     fi
@@ -760,7 +778,7 @@ fi
 Install_PHP_71()
 {
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     PHP_Openssl3_Patch
     PHP_ICU70_Patch
     if [ "${Stack}" = "lnmp" ]; then
@@ -832,7 +850,7 @@ fi
 Install_PHP_72()
 {
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     PHP_Openssl3_Patch
     PHP_ICU70_Patch
     if [ "${Stack}" = "lnmp" ]; then
@@ -904,7 +922,7 @@ fi
 Install_PHP_73()
 {
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     PHP_Openssl3_Patch
     PHP_ICU70_Patch
     if [ "${Stack}" = "lnmp" ]; then
@@ -977,7 +995,7 @@ Install_PHP_74()
 {
     Install_Libzip
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     PHP_Openssl3_Patch
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv-dir --with-freetype=/usr/local/freetype --with-jpeg --with-png --with-zlib --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization ${with_curl} --enable-mbregex --enable-mbstring --enable-intl --enable-pcntl --enable-ftp --enable-gd ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --with-zip --without-libzip --enable-soap --with-gettext ${with_fileinfo} --enable-opcache --with-xsl --with-pear --with-webp ${PHP_Buildin_Option} ${PHP_Modules_Options}
@@ -1049,7 +1067,7 @@ Install_PHP_80()
 {
     Install_Libzip
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     PHP_Openssl3_Patch
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv=/usr/local --with-freetype=/usr/local/freetype --with-jpeg --with-zlib --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem ${with_curl} --enable-mbregex --enable-mbstring --enable-intl --enable-pcntl --enable-ftp --enable-gd ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-zip --enable-soap --with-gettext ${with_fileinfo} --enable-opcache --with-xsl --with-pear --with-webp ${PHP_Buildin_Option} ${PHP_Modules_Options}
@@ -1121,7 +1139,7 @@ Install_PHP_81()
 {
     Install_Libzip
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv=/usr/local --with-freetype=/usr/local/freetype --with-jpeg --with-zlib --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem ${with_curl} --enable-mbregex --enable-mbstring --enable-intl --enable-pcntl --enable-ftp --enable-gd ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-zip --enable-soap --with-gettext ${with_fileinfo} --enable-opcache --with-xsl --with-pear --with-webp ${PHP_Buildin_Option} ${PHP_Modules_Options}
     else
@@ -1192,7 +1210,7 @@ Install_PHP_82()
 {
     Install_Libzip
     Echo_Blue "[+] Installing ${Php_Ver}"
-    Tarj_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
+    Tar_Cd ${Php_Ver}.tar.bz2 ${Php_Ver}
     if [ "${Stack}" = "lnmp" ]; then
         ./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/conf.d --enable-fpm --with-fpm-user=www --with-fpm-group=www --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv=/usr/local --with-freetype=/usr/local/freetype --with-jpeg --with-zlib --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem ${with_curl} --enable-mbregex --enable-mbstring --enable-intl --enable-pcntl --enable-ftp --enable-gd ${with_openssl} --with-mhash --enable-pcntl --enable-sockets --with-zip --enable-soap --with-gettext ${with_fileinfo} --enable-opcache --with-xsl --with-pear --with-webp ${PHP_Buildin_Option} ${PHP_Modules_Options}
     else

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-DB_Info=('MySQL 5.1.73' 'MySQL 5.5.62' 'MySQL 5.6.51' 'MySQL 5.7.38' 'MySQL 8.0.30' 'MariaDB 5.5.68' 'MariaDB 10.3.35' 'MariaDB 10.4.25' 'MariaDB 10.5.16' 'MariaDB 10.6.8')
-PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.40' 'PHP 7.0.33' 'PHP 7.1.33' 'PHP 7.2.34' 'PHP 7.3.33' 'PHP 7.4.33' 'PHP 8.0.27' 'PHP 8.1.14' 'PHP 8.2.1')
+DB_Info=('MySQL 5.1.73' 'MySQL 5.5.62' 'MySQL 5.6.51' 'MySQL 5.7.38' 'MySQL 8.0.31' 'MariaDB 5.5.68' 'MariaDB 10.4.25' 'MariaDB 10.5.16' 'MariaDB 10.6.8' 'MariaDB 10.11.2')
+PHP_Info=('PHP 5.2.17' 'PHP 5.3.29' 'PHP 5.4.45' 'PHP 5.5.38' 'PHP 5.6.40' 'PHP 7.0.33' 'PHP 7.1.33' 'PHP 7.2.34' 'PHP 7.3.33' 'PHP 7.4.33' 'PHP 8.0.27' 'PHP 8.1.17' 'PHP 8.2.4')
 Apache_Info=('Apache 2.2.34' 'Apache 2.4.53')
 
 Database_Selection()
@@ -29,10 +29,55 @@ Database_Selection()
         echo "You will install ${DB_Info[0]}"
         ;;
     2)
-        echo "You will install ${DB_Info[1]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[1]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[1]} from Source."
+                Bin="n"
+                ;;
+            *)
+                Bin="n"
+                ;;
+            esac
+        else
+            echo "Default install ${DB_Info[1]} from Source."
+            Bin="n"
+        fi
         ;;
     3)
-        echo "You will Install ${DB_Info[2]}"
+        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+            if [ -z ${Bin} ]; then
+                read -p "Using Generic Binaries [y/n]: " Bin
+            fi
+            case "${Bin}" in
+            [yY][eE][sS]|[yY])
+                echo "You will install ${DB_Info[2]} Using Generic Binaries."
+                Bin="y"
+                ;;
+            [nN][oO]|[nN])
+                echo "You will install ${DB_Info[2]} from Source."
+                Bin="n"
+                ;;
+            *)
+                if [ "${CheckMirror}" != "n" ]; then
+                    echo "Default install ${DB_Info[2]} Using Generic Binaries."
+                    Bin="y"
+                else
+                    echo "Default install ${DB_Info[2]} from Source."
+                    Bin="n"
+                fi
+                ;;
+            esac
+        else
+            Bin="n"
+        fi
         ;;
     4)
         if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
@@ -179,7 +224,7 @@ Database_Selection()
         ;;
     9)
         echo "You will install ${DB_Info[8]}"
-        if [[ "${DB_ARCH}" = "x86_64" || "${DB_ARCH}" = "i686" ]]; then
+        if [[ "${DB_ARCH}" = "x86_64" ]]; then
             if [ -z ${Bin} ]; then
                 read -p "Using Generic Binaries [y/n]: " Bin
             fi
@@ -243,7 +288,7 @@ Database_Selection()
         DBSelect="2"
     esac
 
-    if [ "${Bin}" != "y" ] && [[ "${DBSelect}" =~ ^5|[7-9]|10$ ]] && [ $(free -m | grep Mem | awk '{print  $2}') -le 1024 ]; then
+    if [ "${Bin}" != "y" ] && [[ "${DBSelect}" =~ ^5|[7-9]|10$ ]] && [ $(awk '/MemTotal/ {printf( "%d\n", $2 / 1024 )}' /proc/meminfo) -le 1024 ]; then
         echo "Memory less than 1GB, can't install MySQL 8.0 or MairaDB 10.3+!"
         exit 1
     fi
@@ -559,9 +604,6 @@ Get_Dist_Name()
     elif grep -Eqi "Oracle Linux" /etc/issue || grep -Eq "Oracle Linux" /etc/*-release; then
         DISTRO='Oracle'
         PM='yum'
-    elif grep -Eqi "Red Hat Enterprise Linux" /etc/issue || grep -Eq "Red Hat Enterprise Linux" /etc/*-release; then
-        DISTRO='RHEL'
-        PM='yum'
     elif grep -Eqi "rockylinux" /etc/issue || grep -Eq "Rocky Linux" /etc/*-release; then
         DISTRO='Rocky'
         PM='yum'
@@ -583,6 +625,9 @@ Get_Dist_Name()
         if grep -Eq "CentOS Stream" /etc/*-release; then
             isCentosStream='y'
         fi
+    elif grep -Eqi "Red Hat Enterprise Linux" /etc/issue || grep -Eq "Red Hat Enterprise Linux" /etc/*-release; then
+        DISTRO='RHEL'
+        PM='yum'
     elif grep -Eqi "Ubuntu" /etc/issue || grep -Eq "Ubuntu" /etc/*-release; then
         DISTRO='Ubuntu'
         PM='apt'
@@ -610,7 +655,7 @@ Get_Dist_Name()
         fi
     elif grep -Eqi "Kylin Linux Desktop" /etc/issue || grep -Eq "Kylin Linux Desktop" /etc/*-release; then
         DISTRO='Kylin'
-        PM='yum'
+        PM='apt'
     else
         DISTRO='unknow'
     fi
@@ -633,6 +678,9 @@ Get_RHEL_Version()
         elif grep -Eqi "release 8." /etc/redhat-release; then
             echo "Current Version: RHEL Ver 8"
             RHEL_Ver='8'
+        elif grep -Eqi "release 9." /etc/redhat-release; then
+            echo "Current Version: RHEL Ver 9"
+            RHEL_Ver='9'
         fi
         RHEL_Version="$(cat /etc/redhat-release | sed 's/.*release\ //' | sed 's/\ .*//')"
     fi
@@ -671,7 +719,7 @@ Download_Files()
         echo "${FileName} [found]"
     else
         echo "Notice: ${FileName} not found!!!download now..."
-        wget -c --progress=bar:force --prefer-family=IPv4 --no-check-certificate ${URL}
+        wget -c --progress=dot -e dotbytes=20M --prefer-family=IPv4 --no-check-certificate ${URL}
     fi
 }
 
@@ -679,38 +727,17 @@ Tar_Cd()
 {
     local FileName=$1
     local DirName=$2
+    local extension=${FileName##*.}
     cd ${cur_dir}/src
     [[ -d "${DirName}" ]] && rm -rf ${DirName}
     echo "Uncompress ${FileName}..."
-    tar zxf ${FileName}
-    if [ -n "${DirName}" ]; then
-        echo "cd ${DirName}..."
-        cd ${DirName}
+    if [ "$extension" == "gz" ] || [ "$extension" == "tgz" ]; then
+        tar zxf "${FileName}"
+    elif [ "$extension" == "bz2" ]; then
+        tar jxf "${FileName}"
+    elif [ "$extension" == "xz" ]; then
+        tar Jxf "${FileName}"
     fi
-}
-
-Tarj_Cd()
-{
-    local FileName=$1
-    local DirName=$2
-    cd ${cur_dir}/src
-    [[ -d "${DirName}" ]] && rm -rf ${DirName}
-    echo "Uncompress ${FileName}..."
-    tar jxf ${FileName}
-    if [ -n "${DirName}" ]; then
-        echo "cd ${DirName}..."
-        cd ${DirName}
-    fi
-}
-
-TarJ_Cd()
-{
-    local FileName=$1
-    local DirName=$2
-    cd ${cur_dir}/src
-    [[ -d "${DirName}" ]] && rm -rf ${DirName}
-    echo "Uncompress ${FileName}..."
-    tar Jxf ${FileName}
     if [ -n "${DirName}" ]; then
         echo "cd ${DirName}..."
         cd ${DirName}
@@ -787,11 +814,12 @@ Print_Sys_Info()
     cat /etc/issue
     cat /etc/*-release
     uname -a
-    MemTotal=$(free -m | grep Mem | awk '{print  $2}')
+    MemTotal=$(awk '/MemTotal/ {printf( "%d\n", $2 / 1024 )}' /proc/meminfo)
     echo "Memory is: ${MemTotal} MB "
     df -h
     Check_Openssl
     Check_WSL
+    Check_Docker
     if [ "${CheckMirror}" != "n" ]; then
         Get_Country
         echo "Server Location: ${country}"
@@ -802,7 +830,7 @@ StartUp()
 {
     init_name=$1
     echo "Add ${init_name} service at system startup..."
-    if [ "${isWSL}" != "y" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${init_name}.service || -s /lib/systemd/system/${init_name}.service || -s /usr/lib/systemd/system/${init_name}.service ]]; then
+    if [ "${isWSL}" = "n" ] && [ "${isDocker}" = "n" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${init_name}.service || -s /lib/systemd/system/${init_name}.service || -s /usr/lib/systemd/system/${init_name}.service ]]; then
         systemctl daemon-reload
         systemctl enable ${init_name}.service
     else
@@ -819,7 +847,7 @@ Remove_StartUp()
 {
     init_name=$1
     echo "Removing ${init_name} service at system startup..."
-    if [ "${isWSL}" != "y" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${init_name}.service || -s /lib/systemd/system/${init_name}.service || -s /usr/lib/systemd/system/${init_name}.service ]]; then
+    if [ "${isWSL}" = "n" ] && [ "${isDocker}" = "n" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${init_name}.service || -s /lib/systemd/system/${init_name}.service || -s /usr/lib/systemd/system/${init_name}.service ]]; then
         systemctl disable ${init_name}.service
     else
         if [ "$PM" = "yum" ]; then
@@ -1034,7 +1062,7 @@ StartOrStop()
 {
     local action=$1
     local service=$2
-    if [ "${isWSL}" = "n" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${service}.service ]]; then
+    if [ "${isWSL}" = "n" ] && [ "${isDocker}" = "n" ] && command -v systemctl >/dev/null 2>&1 && [[ -s /etc/systemd/system/${service}.service ]]; then
         systemctl ${action} ${service}.service
     else
         /etc/init.d/${service} ${action}
@@ -1047,6 +1075,21 @@ Check_WSL() {
         isWSL="y"
     else
         isWSL="n"
+    fi
+}
+
+Check_Docker() {
+    if [ -f /.dockerenv ]; then
+        echo "running on Docker"
+        isDocker="y"
+    elif [ -f /proc/1/cgroup ] && grep -q docker /proc/1/cgroup; then
+        echo "running on Docker"
+        isDocker="y"
+    elif [ -f /proc/self/cgroup ] && grep -q docker /proc/self/cgroup; then
+        echo "running on Docker"
+        isDocker="y"
+    else
+        isDocker="n"
     fi
 }
 
